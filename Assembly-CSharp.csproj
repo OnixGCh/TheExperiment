@@ -59,10 +59,11 @@
     <Compile Include="Assets\enum.cs" />
     <Compile Include="Assets\HunterScript.cs" />
     <Compile Include="Assets\PlayerScript.cs" />
+    <Compile Include="Assets\WeaponScript.cs" />
     <Compile Include="Assets\GeneralMonsterScript.cs" />
     <Compile Include="Assets\AmmoCreateScript.cs" />
     <Compile Include="Assets\InterfaceScript.cs" />
-    <Compile Include="Assets\WeaponScript.cs" />
+    <Compile Include="Assets\WeaponShotFlashSCript.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
