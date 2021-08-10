@@ -1,4 +1,4 @@
-using Assets;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,12 +6,13 @@ public class PlayerScript : MonoBehaviour
 {
     private Transform _transform;
     private Transform _modelTransform;
+    private Animator _animator;
     private CharacterController _controller;
     private InterfaceScript _interface;
-    private WeaponScript selectedWeapon;
+    private WeaponScript _selectedWeapon;
     private float currentHealth;
     private float hitDistance;   
-    private bool isAlive;
+    private bool isAlive = true;
 
     [SerializeField] private float Speed;
     [SerializeField] private GameObject model;
@@ -20,19 +21,17 @@ public class PlayerScript : MonoBehaviour
 
     //DELETE
     private bool fill = true;
-    
+    public WeaponScript GetSelectedWeapon() { return _selectedWeapon; }
     void Start()
     {
         Physics.queriesHitTriggers = true;
 
         _transform = GetComponent<Transform>();
         _modelTransform = model.GetComponent<Transform>();
+        _animator = model.GetComponent<Animator>();
         _controller = GetComponent<CharacterController>();
         _interface = GameObject.Find("Canvas").GetComponent<InterfaceScript>();
         currentHealth = maxHealth;
-        isAlive = true;
-
-        
     }
     void FixedUpdate()
     {
@@ -44,13 +43,13 @@ public class PlayerScript : MonoBehaviour
         //DELETE
         if (fill)
         {
-            WeaponSwitching(0);
-            selectedWeapon.FillAmmo();
-            WeaponSwitching(1);
-            selectedWeapon.FillAmmo();
-            WeaponSwitching(2);
-            selectedWeapon.FillAmmo();
-            WeaponSwitching(0);
+            WeaponSwitch(0);
+            _selectedWeapon.FillAmmo();
+            WeaponSwitch(1);
+            _selectedWeapon.FillAmmo();
+            WeaponSwitch(2);
+            _selectedWeapon.FillAmmo();
+            WeaponSwitch(0);
             fill = false;
         }
 
@@ -58,10 +57,26 @@ public class PlayerScript : MonoBehaviour
         {
             ShootingLogic();
             LookingLogic();
-            if (Input.GetKeyDown(KeyCode.Alpha1)) { WeaponSwitching(0); }
-            if (Input.GetKeyDown(KeyCode.Alpha2)) { WeaponSwitching(1); }
-            if (Input.GetKeyDown(KeyCode.Alpha3)) { WeaponSwitching(2); }
+            if (Input.GetKeyDown(KeyCode.Alpha1)) 
+            {
+                _selectedWeapon.setIsReloading(false);
+                WeaponSwitch(0); 
+                _animator.SetInteger("selectedWeapon", 0);             
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2)) 
+            {
+                _selectedWeapon.setIsReloading(false);
+                WeaponSwitch(1); 
+                _animator.SetInteger("selectedWeapon", 1); 
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                _selectedWeapon.setIsReloading(false);
+                WeaponSwitch(2); 
+                _animator.SetInteger("selectedWeapon", 2); 
+            }
         }
+
     }
     private void MovementLogic()
     {
@@ -73,39 +88,43 @@ public class PlayerScript : MonoBehaviour
 
         _controller.Move(movement * Speed * Time.fixedDeltaTime);
 
+        if (Mathf.Abs(moveHorizontal) > 0 || Mathf.Abs(moveVertical) > 0)
+            _animator.SetBool("isMoving", true);
+        else
+            _animator.SetBool("isMoving", false);
     }
     private void ShootingLogic()
     {
         if (Input.GetKey(KeyCode.Mouse0))
         {
-            if (selectedWeapon.TryShot())
+            if (_selectedWeapon.TryShot())
             {
                 RaycastHit hit;
                 Ray shot = new Ray(_transform.position, _modelTransform.forward);
                 if (Physics.Raycast(shot, out hit, Mathf.Infinity, int.MaxValue, QueryTriggerInteraction.UseGlobal) && hit.transform.GetComponent<GeneralMonsterScript>() != null)
                 {
-                    hit.transform.GetComponent<GeneralMonsterScript>().GetHit(selectedWeapon.getDamage());
+                    hit.transform.GetComponent<GeneralMonsterScript>().GetHit(_selectedWeapon.getDamage());
                 }
             }        
         }
 
         if (Input.GetKeyUp(KeyCode.Mouse0))
-            selectedWeapon.setNoAmmoPressed(false);
+            _selectedWeapon.setNoAmmoPressed(false);
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            selectedWeapon.TryReload();
+            _selectedWeapon.TryReload();
         }
     }
-    private void WeaponSwitching(int weaponIndex)
+    private void WeaponSwitch(int weaponIndex)
     {
         for(int i = 0; i < weapons.childCount; i++)
         {
             if(i == weaponIndex)
             {
                 weapons.GetChild(i).gameObject.SetActive(true);
-                selectedWeapon = weapons.GetChild(i).gameObject.GetComponent<WeaponScript>();
-                _interface.RefreshAmmoInfo(selectedWeapon);
+                _selectedWeapon = weapons.GetChild(i).gameObject.GetComponent<WeaponScript>();
+                _interface.RefreshAmmoInfo(_selectedWeapon);
             }
             else
             {
@@ -137,6 +156,4 @@ public class PlayerScript : MonoBehaviour
 
         return isAlive;
     }
-
-    public WeaponScript GetSelectedWeapon() { return selectedWeapon; }
 }

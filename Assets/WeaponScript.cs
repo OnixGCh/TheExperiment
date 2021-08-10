@@ -16,28 +16,28 @@ public class WeaponScript : MonoBehaviour
     [SerializeField] private int inventoryMaxAmmo;
     [SerializeField] private AudioClip shotSound;
     [SerializeField] private AudioClip reloadSound;
-    [SerializeField] private AudioClip noAmmoSound;
+    [SerializeField] private AudioClip emptyAmmoSound;
     [SerializeField] private GameObject shotFlash;
     [SerializeField] private Transform shotFlashSpawn;
     private InterfaceScript _interface;
     private AudioSource _audioSource;
-
+    public int getAmmoLoaded() { return ammoLoaded; }
+    public int getAmmoInventory() { return ammoInventory; }
+    public int getInventoryMaxAmmo() { return inventoryMaxAmmo; }
+    public float getDamage() { return damage; }
+    public void setNoAmmoPressed(bool value) { noAmmoPressed = value; }
+    public void setIsReloading(bool value) { isReloading = value; }
     private void Start()
     {
         _interface = GameObject.Find("Canvas").GetComponent<InterfaceScript>();
         _audioSource = GetComponent<AudioSource>();
-        _audioSource.loop = false;
+        ammoLoaded = magazineMaxAmmo;
     }
     private void Update()
     {
         if(currentShotDelay >= 0)
             currentShotDelay -= Time.deltaTime;
     }
-    public int getAmmoLoaded() { return ammoLoaded; }
-    public int getAmmoInventory() { return ammoInventory; }
-    public int getInventoryMaxAmmo() { return inventoryMaxAmmo; }
-    public float getDamage() { return damage; }
-    public void setNoAmmoPressed(bool value) { noAmmoPressed = value; }
     public bool TryShot() 
     {        
         if (!isReloading)
@@ -47,8 +47,7 @@ public class WeaponScript : MonoBehaviour
                 if (!noAmmoPressed)
                 {
                     setNoAmmoPressed(true);
-                    _audioSource.clip = noAmmoSound;
-                    _audioSource.Play();
+                    _audioSource.PlayOneShot(emptyAmmoSound);
                 }
                 return false;
             }
@@ -70,7 +69,7 @@ public class WeaponScript : MonoBehaviour
     }
     public void TryReload()
     {
-        if (ammoInventory != 0 && ammoLoaded != magazineMaxAmmo + 1)
+        if (ammoInventory != 0 && ammoLoaded != magazineMaxAmmo + 1 && !isReloading)
             StartCoroutine(Reload());
     }
 
@@ -91,8 +90,7 @@ public class WeaponScript : MonoBehaviour
 
     IEnumerator Reload()
     {
-        _audioSource.clip = reloadSound;
-        _audioSource.Play();
+        _audioSource.PlayOneShot(reloadSound);
         isReloading = true;
         setNoAmmoPressed(false);
 

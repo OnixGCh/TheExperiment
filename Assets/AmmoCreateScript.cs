@@ -5,7 +5,7 @@ using UnityEngine;
 public class AmmoCreateScript : MonoBehaviour
 {
     private GameObject player;
-    private PlayerScript playerScript;
+    private PlayerScript _playerScript;
     private InterfaceScript _interface;
     private Transform _transform;
     private float timer = 3f;
@@ -13,15 +13,15 @@ public class AmmoCreateScript : MonoBehaviour
     {
         gameObject.GetComponent<MeshRenderer>().materials[0].color = Color.green;
         player = GameObject.Find("Player");
-        playerScript = player.GetComponent<PlayerScript>();
+        _playerScript = player.GetComponent<PlayerScript>();
         _transform = GetComponent<Transform>();
         _interface = GameObject.Find("Canvas").GetComponent<InterfaceScript>();
     }
     private void Update()
     {
         if(Input.GetKey(KeyCode.E) 
-        && Vector3.Distance(_transform.position, player.transform.position) < 2f 
-        && playerScript.GetSelectedWeapon().getAmmoInventory() != playerScript.GetSelectedWeapon().getInventoryMaxAmmo())
+        && Vector3.Distance(_transform.position, player.transform.position) < 3f 
+        && _playerScript.GetSelectedWeapon().getAmmoInventory() != _playerScript.GetSelectedWeapon().getInventoryMaxAmmo())
         {
             _interface.ActionProgressBarEnable();
             _interface.SetActionProgressBarValue((3f - timer) / 3f);
@@ -36,7 +36,7 @@ public class AmmoCreateScript : MonoBehaviour
 
         if(timer <= 0)
         {
-            playerScript.GetSelectedWeapon().FillAmmo();
+            _playerScript.GetSelectedWeapon().FillAmmo();
             timer = 3f;
             _interface.ActionProgressBarDisable();
         }
