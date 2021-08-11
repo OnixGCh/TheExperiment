@@ -8,19 +8,21 @@ public abstract class GeneralMonsterScript : MonoBehaviour
     private NavMeshAgent _agent;
     private Transform _trans;
     private Animator _animator;
-    //private AudioSource _audio;
+    private AudioSource _audio;
     private GameObject player;
     private float currentHealth;
     private float currentAttackDelay;
+    private bool roared = false;
+
     [SerializeField] private float detectionDistance;
     [SerializeField] private float damage;
     [SerializeField] private float attackDelay;
     [SerializeField] private float maxHealth;
-    [SerializeField] static private bool fightStarted;
-    //[SerializeField] private AudioClip steps;
+    [SerializeField] static private bool fightStarted = true;
+    [SerializeField] private AudioClip[] roar = new AudioClip[3];
+    [SerializeField] private AudioClip hit;
+    [SerializeField] private GameObject supply;
 
-    /*private bool running = false;
-    private bool hit = false;*/
     public Animator GetAnimator() { return _animator; }
 
     public virtual void Start()
@@ -28,7 +30,7 @@ public abstract class GeneralMonsterScript : MonoBehaviour
         _agent = GetComponent<NavMeshAgent>();
         _trans = GetComponent<Transform>();
         _animator = GetComponent<Animator>();
-        //_audio = GetComponent<AudioSource>();
+        _audio = GetComponent<AudioSource>();
         player = GameObject.Find("Player");
         currentHealth = maxHealth;
         currentAttackDelay = attackDelay;
@@ -37,8 +39,6 @@ public abstract class GeneralMonsterScript : MonoBehaviour
     {
         if ((Vector3.Distance(_trans.position, player.transform.position) < detectionDistance || fightStarted))
         {
-            /*if(!fightStarted)
-                running = true;*/
             fightStarted = true;
             _agent.destination = player.transform.position;
             _animator.SetBool("isMoving", true);
@@ -48,31 +48,19 @@ public abstract class GeneralMonsterScript : MonoBehaviour
         {
             _agent.destination = _trans.position;
             _animator.SetBool("isMoving", false);
-            //running = false;
         }
 
         if (currentAttackDelay > -1)
             currentAttackDelay -= Time.deltaTime;
 
-        if(Vector3.Distance(_trans.position, player.transform.position) < 2 && currentAttackDelay < 0)
+        if(Vector3.Distance(_trans.position, player.transform.position) < 2.5 && currentAttackDelay < 0)
         {           
             HitPlayer();           
         }
 
-        /*if (hit)
-        {
-            StartCoroutine(HitCoroutine());
-        }
+        if (!roared)
+            StartCoroutine(Roar());
 
-        if (running)
-        {
-            print("dfhdhdf");
-            running = false;
-            _audio.clip = steps;
-            _audio.time = Random.Range(0, 7);
-            _audio.loop = true;
-            _audio.Play();
-        }*/
     }
 
     public void GetHit(float damage)
@@ -81,27 +69,25 @@ public abstract class GeneralMonsterScript : MonoBehaviour
         currentHealth -= damage;
         if(currentHealth <= 0)
         {
+            for (int i = 0; i < Random.Range(0, 4); i++)
+            {
+                Instantiate(supply, new Vector3(_trans.position.x, 0, _trans.position.z), _trans.rotation);
+            }
             Destroy(this.gameObject);
         }
     }
     public virtual void HitPlayer()
     {
         player.GetComponent<PlayerScript>().GetHit(damage);
-        /*running = false;
-        hit = true;*/
         currentAttackDelay = attackDelay;
+        _audio.PlayOneShot(hit);
     }
 
-    /*IEnumerator HitCoroutine()
+    IEnumerator Roar()
     {
-        hit = false;
-
-        //_audio.clip = param-param;
-        //_audio.loop = false;
-        //_audio.Play();
-
-        yield return new WaitForSeconds(1f);
-
-        running = true;
-    }*/
+        roared = true;
+        _audio.PlayOneShot(roar[Random.Range(0, 2)]);
+        yield return new WaitForSeconds(2);
+        roared = false;
+    }
 }

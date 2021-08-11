@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AmmoCreateScript : MonoBehaviour
 {
-    private GameObject player;
+    /*private GameObject player;
     private PlayerScript _playerScript;
     private InterfaceScript _interface;
     private Transform _transform;
@@ -40,5 +40,5 @@ public class AmmoCreateScript : MonoBehaviour
             timer = 3f;
             _interface.ActionProgressBarDisable();
         }
-    }
+    }*/
 }

@@ -21,10 +21,13 @@ public class InterfaceScript : MonoBehaviour
             currentHealth = 0;
         HealthBar.transform.localScale = new Vector3(currentHealth / maxHealth, 1, 1);
     }
-    public void RefreshAmmoInfo(WeaponScript weapon)
+    public void RefreshAmmoInventory(int value)
+    {        
+        ammoInventory.GetComponent<Text>().text = value.ToString();
+    }
+    public void RefreshLoadedAmmo(WeaponScript weapon)
     {
         ammoLoaded.GetComponent<Text>().text = weapon.getAmmoLoaded().ToString();
-        ammoInventory.GetComponent<Text>().text = weapon.getAmmoInventory().ToString();
     }
 
     public void ActionProgressBarEnable() { actionProgressBar.SetActive(true); }

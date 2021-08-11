@@ -1905,34 +1905,34 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
+  MinDistance: 0.5
+  MaxDistance: 6
   Pan2D: 0
   rolloffMode: 0
-  BypassEffects: 0
-  BypassListenerEffects: 0
-  BypassReverbZones: 0
+  BypassEffects: 1
+  BypassListenerEffects: 1
+  BypassReverbZones: 1
   rolloffCustomCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
+      time: 0.5601895
+      value: 1.0070496
+      inSlope: -1.3673748
+      outSlope: -1.3673748
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
+      inWeight: 0
+      outWeight: 0
     - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
+      time: 0.9857178
+      value: 0.05469632
+      inSlope: -0.73191375
+      outSlope: -0.73191375
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -1941,7 +1941,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -1991,11 +1991,11 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.3
-  m_Speed: 3
+  m_Speed: 4
   m_Acceleration: 15
   avoidancePriority: 50
   m_AngularSpeed: 350
-  m_StoppingDistance: 1
+  m_StoppingDistance: 2
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -2032,6 +2032,12 @@ MonoBehaviour:
   damage: 15
   attackDelay: 5
   maxHealth: 100
+  roar:
+  - {fileID: 8300000, guid: a12666b9acd9ba0449d2436a19100087, type: 3}
+  - {fileID: 8300000, guid: 18ae35e7a1518474fb6ffba2a11d5ab9, type: 3}
+  - {fileID: 8300000, guid: 4dd03099c8ad97e40ba3cf4b03ffc5dd, type: 3}
+  hit: {fileID: 8300000, guid: e0ebdb1d0705df242928381be874ef6f, type: 3}
+  supply: {fileID: 7595968020608095181, guid: ed0cf0a4b3955aa4a85911b942df7825, type: 3}
 --- !u!1 &8785265630668158210
 GameObject:
   m_ObjectHideFlags: 0

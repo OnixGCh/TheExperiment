@@ -1,3 +1,4 @@
+using Assets;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,6 @@ public class WeaponScript : MonoBehaviour
 {
     private float currentShotDelay;
     private int ammoLoaded;
-    private int ammoInventory;
     private bool isReloading = false;
     private bool noAmmoPressed = false;
     [SerializeField] private float damage;
@@ -19,19 +19,40 @@ public class WeaponScript : MonoBehaviour
     [SerializeField] private AudioClip emptyAmmoSound;
     [SerializeField] private GameObject shotFlash;
     [SerializeField] private Transform shotFlashSpawn;
+    private Weapons thisWeapon;
+    private PlayerScript _player;
     private InterfaceScript _interface;
     private AudioSource _audioSource;
+
+
     public int getAmmoLoaded() { return ammoLoaded; }
-    public int getAmmoInventory() { return ammoInventory; }
     public int getInventoryMaxAmmo() { return inventoryMaxAmmo; }
     public float getDamage() { return damage; }
     public void setNoAmmoPressed(bool value) { noAmmoPressed = value; }
     public void setIsReloading(bool value) { isReloading = value; }
     private void Start()
     {
+        switch (this.gameObject.name)
+        {
+            case "Pistol":
+                thisWeapon = Weapons.Pistol;
+                break;
+
+            case "SMG":
+                thisWeapon = Weapons.SMG;
+                break;
+
+            case "Rifle":
+                thisWeapon = Weapons.Rifle;
+                break;
+        }
+
+        _player = GameObject.Find("Player").GetComponent<PlayerScript>();
         _interface = GameObject.Find("Canvas").GetComponent<InterfaceScript>();
         _audioSource = GetComponent<AudioSource>();
-        ammoLoaded = magazineMaxAmmo;
+        ammoLoaded = 0;
+
+        this.gameObject.SetActive(false);
     }
     private void Update()
     {
@@ -60,35 +81,20 @@ public class WeaponScript : MonoBehaviour
                 _audioSource.clip = shotSound;
                 _audioSource.Play();
                 Instantiate(shotFlash, shotFlashSpawn.position, shotFlashSpawn.rotation);
-                _interface.RefreshAmmoInfo(this);
+                _interface.RefreshLoadedAmmo(this);
                 return true;
             }
         }
 
         return false;
     }
-    public void TryReload()
+    public void TryReload(int ammoInventory)
     {
         if (ammoInventory != 0 && ammoLoaded != magazineMaxAmmo + 1 && !isReloading)
-            StartCoroutine(Reload());
+            StartCoroutine(Reload(ammoInventory));
     }
 
-    private int TakeInventoryAmmo(int request)
-    {
-        if(ammoInventory >= request)
-        {
-            ammoInventory -= request;
-            return request;
-        }
-        else
-        {
-            request = ammoInventory;
-            ammoInventory = 0;
-            return request;
-        }
-    }
-
-    IEnumerator Reload()
+    IEnumerator Reload(int ammoInventory)
     {
         _audioSource.PlayOneShot(reloadSound);
         isReloading = true;
@@ -96,22 +102,25 @@ public class WeaponScript : MonoBehaviour
 
         yield return new WaitForSeconds(reloadTime);
 
-        int difference;
+        int request;
         if (ammoLoaded > 1)
         {
-            difference = magazineMaxAmmo - ammoLoaded + 1;
-            ammoLoaded += TakeInventoryAmmo(difference);
+            request = magazineMaxAmmo - ammoLoaded + 1;
         }
-        else
-            ammoLoaded += TakeInventoryAmmo(magazineMaxAmmo);
+        else 
+        {
+            request = magazineMaxAmmo;
+        }
 
-        _interface.RefreshAmmoInfo(this);
+        if (request > ammoInventory)
+            request = ammoInventory;
+
+        ammoLoaded += request;
+        ammoInventory -= request;
+
+        _interface.RefreshLoadedAmmo(this);
+        _interface.RefreshAmmoInventory(ammoInventory);
         isReloading = false;
-    }
-
-    public void FillAmmo() 
-    { 
-        ammoInventory = inventoryMaxAmmo;
-        _interface.RefreshAmmoInfo(this);
+        _player.SetAmmoInventory(thisWeapon, ammoInventory);
     }
 }

@@ -63,6 +63,9 @@
     <Compile Include="Assets\GeneralMonsterScript.cs" />
     <Compile Include="Assets\AmmoCreateScript.cs" />
     <Compile Include="Assets\InterfaceScript.cs" />
+    <Compile Include="Assets\SpawnManagerScript.cs" />
+    <Compile Include="Assets\SupplyScript.cs" />
+    <Compile Include="Assets\enum.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
