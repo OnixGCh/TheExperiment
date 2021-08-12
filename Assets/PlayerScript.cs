@@ -43,7 +43,7 @@ public class PlayerScript : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(isAlive)
+        if (isAlive)
             MovementLogic();
     }
     private void Update()
@@ -93,7 +93,7 @@ public class PlayerScript : MonoBehaviour
 
         _controller.Move(movement * Speed * Time.fixedDeltaTime);
 
-        if (Input.GetKey(KeyCode.Space) && speedUpReloaded)
+        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKey(KeyCode.Space)) && speedUpReloaded)
             StartCoroutine(speedUp());
 
         if (Mathf.Abs(moveHorizontal) > 0 || Mathf.Abs(moveVertical) > 0)
@@ -194,11 +194,12 @@ public class PlayerScript : MonoBehaviour
     }
     IEnumerator speedUp()
     {
-        speedUpReloaded = false;
-        Speed *= 3;
+        Speed *= 5;
+        speedUpReloaded = false;        
         yield return new WaitForSeconds(0.2f);
-        Speed /= 3;
-        yield return new WaitForSeconds(1f);
+        Speed /= 5;
+
+        yield return new WaitForSeconds(0.7f);
         speedUpReloaded = true;
     }
 }
